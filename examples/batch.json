@@ -1,0 +1,27 @@
+[
+  {
+    "id": 1,
+    "name": "Ruchi",
+    "email": "ruchi@example.com",
+    "age": 16,
+    "department": "Engineering",
+    "salary": 750000
+  },
+  {
+    "id": 2,
+    "name": "Advik",
+    "email": "adu@example.com",
+    "age": 3,
+    "department": "Marketing",
+    "salary": 6500
+  },
+  {
+    "id": 3,
+    "name": "Shlok",
+    "email": "shlok@example.com",
+    "age": 28,
+    "department": "Doctor",
+    "salary": 8000000
+  }
+]
+
