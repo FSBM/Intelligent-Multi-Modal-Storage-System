@@ -9,20 +9,14 @@ export default function Home() {
   const [activeTab, setActiveTab] = useState<'upload' | 'search' | 'stats'>('upload');
 
   return (
-    <main className="min-h-screen p-8">
+    <main className="min-h-screen p-8 bg-gray-50">
       <div className="max-w-7xl mx-auto">
+        {/* Header */}
         <header className="mb-8">
-<<<<<<< HEAD
-          <h1 className="text-4xl font-bold text-white-900 mb-2">
-            Unified Smart Storage System
-          </h1>
-          <p className="text-white-600">
-=======
           <h1 className="text-4xl font-bold text-gray-900 mb-2">
             Unified Smart Storage System
           </h1>
           <p className="text-gray-600">
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
             Intelligently store and retrieve media files and JSON data
           </p>
         </header>
@@ -73,4 +67,3 @@ export default function Home() {
     </main>
   );
 }
-
