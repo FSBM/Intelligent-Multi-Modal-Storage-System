@@ -2,10 +2,17 @@
   "user": {
     "id": 123,
     "profile": {
+<<<<<<< HEAD
       "name": "Ankita",
       "contact": {
         "email": "anki@example.com",
         "phone": "+91-8178648498"
+=======
+      "name": "Jane Smith",
+      "contact": {
+        "email": "jane@example.com",
+        "phone": "+1-555-0123"
+>>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
       }
     },
     "preferences": {

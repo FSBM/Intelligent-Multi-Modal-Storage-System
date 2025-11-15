@@ -1,6 +1,7 @@
 version: '3.8'
 
 services:
+<<<<<<< HEAD
   backend:
     build: ./backend
     container_name: smart_storage_backend
@@ -15,6 +16,8 @@ services:
       DATABASE_URL: postgres://postgres:postgres@postgres:5432/smart_storage
       MONGO_URL: mongodb://mongodb:27017/smart_storage
 
+=======
+>>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
   postgres:
     image: postgres:15
     container_name: smart_storage_postgres
@@ -50,3 +53,7 @@ services:
 volumes:
   postgres_data:
   mongodb_data:
+<<<<<<< HEAD
+=======
+
+>>>>>>> 7317999ac0186241bdad8633188701b09657ab9f

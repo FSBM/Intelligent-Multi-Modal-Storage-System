@@ -107,6 +107,13 @@
 - Check browser console for errors
 - Verify backend is running on port 8000
 
+<<<<<<< HEAD
+=======
+### Model Loading Issues
+- CLIP model downloads automatically on first use (~500MB)
+- Ensure stable internet connection
+- Check disk space availability
+>>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
 
 ## Production Deployment
 

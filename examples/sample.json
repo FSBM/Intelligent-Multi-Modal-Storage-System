@@ -1,9 +1,17 @@
 {
+<<<<<<< HEAD
   "name": "Ankita",
   "email": "ankita.tr@example.com",
   "age": 19,
   "city": "India",
   "country": "India",
+=======
+  "name": "John Doe",
+  "email": "john.doe@example.com",
+  "age": 30,
+  "city": "New York",
+  "country": "USA",
+>>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
   "created_at": "2024-01-15T10:30:00Z"
 }
 

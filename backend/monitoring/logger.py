@@ -7,7 +7,11 @@ import sys
 from pythonjsonlogger import jsonlogger
 from datetime import datetime
 
+<<<<<<< HEAD
 # creates logger
+=======
+
+>>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
 def setup_logger(name: str = "smart_storage") -> logging.Logger:
     """Setup structured JSON logging"""
     logger = logging.getLogger(name)
