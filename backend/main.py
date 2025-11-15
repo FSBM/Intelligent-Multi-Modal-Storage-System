@@ -29,7 +29,6 @@ app.add_middleware(
 
 # Initialize components
 logger = setup_logger()
-<<<<<<< HEAD
 
 # Initialize components with error handling
 try:
@@ -66,13 +65,6 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize MetadataIndexer: {e}")
     metadata_indexer = None
-=======
-media_processor = MediaProcessor()
-json_analyzer = JSONAnalyzer()
-storage_engine = StorageDecisionEngine()
-directory_manager = DirectoryManager()
-metadata_indexer = MetadataIndexer()
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
 
 # Ensure upload directory exists
 UPLOAD_DIR = Path("uploads")
@@ -139,26 +131,20 @@ async def upload_file(file: UploadFile = File(...)):
         
         # Route based on data type
         if is_media_type(mime_type):
-<<<<<<< HEAD
             if media_processor is None:
                 raise HTTPException(
                     status_code=503,
                     detail="Media processor is not available"
                 )
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
             logger.info("Routing to media processor")
             result = await process_media(file_path, mime_type, file.filename)
         
         elif is_json_type(mime_type):
-<<<<<<< HEAD
             if json_analyzer is None or storage_engine is None:
                 raise HTTPException(
                     status_code=503,
                     detail="JSON processing components are not available"
                 )
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
             logger.info("Routing to JSON analyzer")
             result = await process_json(file_path, file.filename)
         
@@ -187,7 +173,6 @@ async def process_media(file_path: Path, mime_type: str, filename: str) -> dict:
     category = processing_result.get("category", "uncategorized")
     
     # Directory manager: create or use existing category directory
-<<<<<<< HEAD
     if directory_manager:
         storage_path = await directory_manager.store_media(
             file_path, category, filename
@@ -197,11 +182,6 @@ async def process_media(file_path: Path, mime_type: str, filename: str) -> dict:
         storage_path = UPLOAD_DIR / filename
         import shutil
         shutil.copy2(file_path, storage_path)
-=======
-    storage_path = await directory_manager.store_media(
-        file_path, category, filename
-    )
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     
     # Store metadata and index
     metadata = {
@@ -213,14 +193,10 @@ async def process_media(file_path: Path, mime_type: str, filename: str) -> dict:
         "metadata": processing_result.get("metadata", {}),
     }
     
-<<<<<<< HEAD
     if metadata_indexer:
         index_id = await metadata_indexer.index_media(metadata)
     else:
         index_id = 0
-=======
-    index_id = await metadata_indexer.index_media(metadata)
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     
     logger.info(f"Media processed: {filename} -> {storage_path}, category: {category}")
     
@@ -256,14 +232,10 @@ async def process_json(file_path: Path, filename: str) -> dict:
         "storage_result": storage_result,
     }
     
-<<<<<<< HEAD
     if metadata_indexer:
         index_id = await metadata_indexer.index_json(metadata)
     else:
         index_id = 0
-=======
-    index_id = await metadata_indexer.index_json(metadata)
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     
     logger.info(
         f"JSON processed: {filename} -> {schema_decision['storage_type']}, "
@@ -305,11 +277,8 @@ async def search_media(
     limit: int = 20
 ):
     """Search media by category or semantic query"""
-<<<<<<< HEAD
     if metadata_indexer is None:
         raise HTTPException(status_code=503, detail="Metadata indexer is not available")
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     results = await metadata_indexer.search_media(
         category=category, query=query, limit=limit
     )
@@ -323,11 +292,8 @@ async def search_json(
     limit: int = 20
 ):
     """Search JSON records"""
-<<<<<<< HEAD
     if metadata_indexer is None:
         raise HTTPException(status_code=503, detail="Metadata indexer is not available")
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     results = await metadata_indexer.search_json(
         schema=schema, query=query, limit=limit
     )
@@ -337,11 +303,8 @@ async def search_json(
 @app.get("/api/stats")
 async def get_stats():
     """Get system statistics"""
-<<<<<<< HEAD
     if metadata_indexer is None:
         return {"error": "Metadata indexer is not available"}
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     stats = await metadata_indexer.get_stats()
     return stats
 

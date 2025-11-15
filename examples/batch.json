@@ -1,7 +1,6 @@
 [
   {
     "id": 1,
-<<<<<<< HEAD
     "name": "Ruchi",
     "email": "ruchi@example.com",
     "age": 16,
@@ -23,29 +22,6 @@
     "age": 28,
     "department": "Doctor",
     "salary": 8000000
-=======
-    "name": "Alice",
-    "email": "alice@example.com",
-    "age": 25,
-    "department": "Engineering",
-    "salary": 75000
-  },
-  {
-    "id": 2,
-    "name": "Bob",
-    "email": "bob@example.com",
-    "age": 32,
-    "department": "Marketing",
-    "salary": 65000
-  },
-  {
-    "id": 3,
-    "name": "Charlie",
-    "email": "charlie@example.com",
-    "age": 28,
-    "department": "Engineering",
-    "salary": 80000
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
   }
 ]
 

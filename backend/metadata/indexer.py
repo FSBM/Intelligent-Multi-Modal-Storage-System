@@ -3,12 +3,9 @@ Metadata + Indexing Layer
 Fast lookup for all stored files/records
 Enables efficient retrieval
 """
-<<<<<<< HEAD
 # smart file tracker
 # It doesn’t store the actual files
 # it stores metadata about them so you can search, filter, and manage them efficiently.
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
 import os
 from typing import Dict, List, Optional, Any
 import logging
@@ -20,10 +17,6 @@ from storage.database.nosql_storage import NoSQLStorage
 
 logger = logging.getLogger(__name__)
 
-<<<<<<< HEAD
-=======
-
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
 class MetadataIndexer:
     """Indexes and retrieves metadata for all stored content"""
     
@@ -31,12 +24,9 @@ class MetadataIndexer:
         # Use SQL for metadata index (fast lookups)
         self.sql_storage = SQLStorage()
         self.nosql_storage = NoSQLStorage()
-<<<<<<< HEAD
         self._tables_created = False
         self._media_schema = None
         self._json_schema = None
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
         self._ensure_metadata_tables()
     
     def _ensure_metadata_tables(self):
@@ -79,7 +69,6 @@ class MetadataIndexer:
         }
         
         # Create tables (async, but called during init)
-<<<<<<< HEAD
         # Use try-except to handle cases where event loop is already running
         import asyncio
         try:
@@ -128,20 +117,6 @@ class MetadataIndexer:
         """Index media file metadata"""
         await self._ensure_tables_async()
         
-=======
-        import asyncio
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
-        
-        loop.run_until_complete(self.sql_storage.create_table(media_schema))
-        loop.run_until_complete(self.sql_storage.create_table(json_schema))
-    
-    async def index_media(self, metadata: Dict) -> int:
-        """Index media file metadata"""
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
         record = {
             "filename": metadata.get("filename"),
             "mime_type": metadata.get("mime_type"),
@@ -157,16 +132,11 @@ class MetadataIndexer:
         logger.info(f"Indexed media: {metadata.get('filename')} -> index_id: {index_id}")
         return index_id or 0
     
-<<<<<<< HEAD
     #Add a jsonfile
     async def index_json(self, metadata: Dict) -> int:
         """Index JSON file metadata"""
         await self._ensure_tables_async()
         
-=======
-    async def index_json(self, metadata: Dict) -> int:
-        """Index JSON file metadata"""
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
         schema_decision = metadata.get("schema_decision", {})
         storage_result = metadata.get("storage_result", {})
         
@@ -192,10 +162,7 @@ class MetadataIndexer:
         logger.info(f"Indexed JSON: {metadata.get('filename')} -> index_id: {index_id}")
         return index_id or 0
     
-<<<<<<< HEAD
     # simple filtering
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     async def search_media(
         self, category: Optional[str] = None, query: Optional[str] = None, limit: int = 20
     ) -> List[Dict]:
@@ -224,10 +191,7 @@ class MetadataIndexer:
         # TODO: Implement query-based search in actual storage
         
         return results
-<<<<<<< HEAD
         # simple filtering till here!
-=======
->>>>>>> 7317999ac0186241bdad8633188701b09657ab9f
     
     async def get_stats(self) -> Dict:
         """Get system statistics"""
