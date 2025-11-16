@@ -16,11 +16,9 @@ transformers==4.35.2
 sentencepiece==0.2.0
 safetensors==0.6.2
 
-# Critical fix: numpy must be <2.0 for scikit-learn compatibility
-numpy>=2.3.3
+numpy==2.3.4
 
-# scikit-learn version compatible with numpy<2
-scikit-learn>=1.7.2
+scikit-learn==1.7.2
 
 # Document processing
 PyPDF2>=3.0.0
