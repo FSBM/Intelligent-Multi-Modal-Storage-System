@@ -15,9 +15,10 @@ interface SearchResult {
 }
 
 export default function SearchInterface() {
-  const [searchType, setSearchType] = useState<'media' | 'json'>('media');
+  const [searchType, setSearchType] = useState<'media' | 'json' | 'documents'>('media');
   const [category, setCategory] = useState('');
   const [query, setQuery] = useState('');
+  const [mimeType, setMimeType] = useState('');
   const [results, setResults] = useState<SearchResult[]>([]);
   const [loading, setLoading] = useState(false);
 
@@ -52,9 +53,35 @@ export default function SearchInterface() {
     }
   };
 
+  const searchDocuments = async () => {
+    setLoading(true);
+    try {
+      const response = await axios.get('/api/search/documents', {
+        params: {
+          category: category || undefined,
+          mime_type: mimeType || undefined,
+          query: query || undefined,
+          limit: 20,
+        },
+      });
+      setResults(response.data.results || []);
+    } catch (error) {
+      console.error('Search error:', error);
+      setResults([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
-    searchType === 'media' ? searchMedia() : searchJSON();
+    if (searchType === 'media') {
+      searchMedia();
+    } else if (searchType === 'json') {
+      searchJSON();
+    } else {
+      searchDocuments();
+    }
   };
 
   return (
@@ -73,7 +100,7 @@ export default function SearchInterface() {
                   type="radio"
                   value="media"
                   checked={searchType === 'media'}
-                  onChange={(e) => setSearchType(e.target.value as 'media')}
+                  onChange={(e) => setSearchType(e.target.value as 'media' | 'json' | 'documents')}
                   className="mr-2"
                 />
                 Media
@@ -83,10 +110,20 @@ export default function SearchInterface() {
                   type="radio"
                   value="json"
                   checked={searchType === 'json'}
-                  onChange={(e) => setSearchType(e.target.value as 'json')}
+                  onChange={(e) => setSearchType(e.target.value as 'media' | 'json' | 'documents')}
                   className="mr-2"
                 />
                 JSON
+              </label>
+              <label className="flex items-center text-black">
+                <input
+                  type="radio"
+                  value="documents"
+                  checked={searchType === 'documents'}
+                  onChange={(e) => setSearchType(e.target.value as 'media' | 'json' | 'documents')}
+                  className="mr-2"
+                />
+                Documents
               </label>
             </div>
           </div>
@@ -94,16 +131,40 @@ export default function SearchInterface() {
           {/* Category / Schema */}
           <div>
             <label className="block text-sm font-medium text-black mb-2">
-              {searchType === 'media' ? 'Category' : 'Schema'}
+              {searchType === 'media' ? 'Category' : searchType === 'json' ? 'Schema' : 'Category'}
             </label>
             <input
               type="text"
               value={category}
               onChange={(e) => setCategory(e.target.value)}
-              placeholder={searchType === 'media' ? 'e.g., nature, animals, people' : 'Schema name'}
+              placeholder={
+                searchType === 'media'
+                  ? 'e.g., nature, animals, people'
+                  : searchType === 'json'
+                  ? 'Schema name'
+                  : 'e.g., technical, business, academic'
+              }
               className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black"
             />
           </div>
+
+          {/* MIME Type (for documents) */}
+          {searchType === 'documents' && (
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">MIME Type (optional)</label>
+              <select
+                value={mimeType}
+                onChange={(e) => setMimeType(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 text-black"
+              >
+                <option value="">All types</option>
+                <option value="application/pdf">PDF</option>
+                <option value="application/msword">DOC</option>
+                <option value="application/vnd.openxmlformats-officedocument.wordprocessingml.document">DOCX</option>
+                <option value="text/plain">TXT</option>
+              </select>
+            </div>
+          )}
 
           {/* Query */}
           <div>
@@ -151,6 +212,19 @@ export default function SearchInterface() {
                   <div className="mt-2 text-sm text-black">
                     {result.schema_name && <p>Schema: {result.schema_name}</p>}
                     {result.storage_type && <p>Storage: {result.storage_type}</p>}
+                  </div>
+                )}
+
+                {searchType === 'documents' && (
+                  <div className="mt-2 text-sm text-black">
+                    {result.category && <p>Category: {result.category}</p>}
+                    {result.mime_type && <p>Type: {result.mime_type}</p>}
+                    {result.storage_path && <p className="text-xs text-gray-700">Path: {result.storage_path}</p>}
+                    {result.text && (
+                      <p className="text-xs text-gray-600 mt-1 line-clamp-2">
+                        {result.text.substring(0, 200)}...
+                      </p>
+                    )}
                   </div>
                 )}
               </div>

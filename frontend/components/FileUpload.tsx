@@ -12,6 +12,8 @@ interface UploadResult {
   schema_decision?: any;
   index_id?: number;
   error?: string;
+  text_preview?: string;
+  metadata?: any;
 }
 
 export default function FileUpload() {
@@ -107,7 +109,7 @@ export default function FileUpload() {
           className="hidden"
           multiple
           onChange={handleFileSelect}
-          accept="image/*,video/*,.json"
+          accept="image/*,video/*,.json,.pdf,.doc,.docx,.txt"
         />
         <label
           htmlFor="file-upload"
@@ -130,7 +132,7 @@ export default function FileUpload() {
             Drag and drop files here, or click to select
           </p>
           <p className="text-sm text-gray-500">
-            Supports images, videos, and JSON files
+            Supports images, videos, JSON, PDF, DOC, DOCX, and TXT files
           </p>
         </label>
       </div>
@@ -202,6 +204,33 @@ export default function FileUpload() {
                               <p>
                                 Storage: {result.schema_decision.storage_type}
                               </p>
+                            )}
+                          </>
+                        )}
+                        {result.type === 'document' && (
+                          <>
+                            <p>Type: Document</p>
+                            {result.category && <p>Category: {result.category}</p>}
+                            {result.storage_path && (
+                              <p className="text-xs text-gray-500">
+                                Path: {result.storage_path}
+                              </p>
+                            )}
+                            {result.text_preview && (
+                              <div className="mt-2 p-2 bg-gray-100 rounded text-xs max-h-32 overflow-y-auto">
+                                <p className="font-medium mb-1">Text Preview:</p>
+                                <p className="text-gray-700">{result.text_preview}...</p>
+                              </div>
+                            )}
+                            {result.metadata?.metadata && (
+                              <div className="mt-2 text-xs text-gray-500">
+                                {result.metadata.metadata.word_count && (
+                                  <p>Words: {result.metadata.metadata.word_count}</p>
+                                )}
+                                {result.metadata.metadata.num_pages && (
+                                  <p>Pages: {result.metadata.metadata.num_pages}</p>
+                                )}
+                              </div>
                             )}
                           </>
                         )}

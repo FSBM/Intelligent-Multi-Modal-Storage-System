@@ -11,6 +11,7 @@ from pathlib import Path
 
 from processors.media_processor import MediaProcessor
 from processors.json_analyzer import JSONAnalyzer
+from processors.document_processor import DocumentProcessor
 from storage.storage_engine import StorageDecisionEngine
 from storage.directory_manager import DirectoryManager
 from metadata.indexer import MetadataIndexer
@@ -44,6 +45,13 @@ try:
 except Exception as e:
     logger.error(f"Failed to initialize JSONAnalyzer: {e}")
     json_analyzer = None
+
+try:
+    document_processor = DocumentProcessor()
+    logger.info("DocumentProcessor initialized")
+except Exception as e:
+    logger.error(f"Failed to initialize DocumentProcessor: {e}")
+    document_processor = None
 
 try:
     storage_engine = StorageDecisionEngine()
@@ -86,7 +94,13 @@ def detect_mime_type(file: UploadFile) -> str:
             ".mp4": "video/mp4",
             ".mov": "video/quicktime",
             ".avi": "video/x-msvideo",
+            ".mkv": "video/x-matroska",
+            ".webm": "video/webm",
             ".json": "application/json",
+            ".pdf": "application/pdf",
+            ".doc": "application/msword",
+            ".docx": "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+            ".txt": "text/plain",
         }
         content_type = mime_map.get(ext, "application/octet-stream")
     return content_type
@@ -100,6 +114,17 @@ def is_media_type(mime_type: str) -> bool:
 def is_json_type(mime_type: str) -> bool:
     """Check if MIME type is JSON"""
     return mime_type == "application/json" or mime_type.endswith("+json")
+
+
+def is_document_type(mime_type: str) -> bool:
+    """Check if MIME type is a document (PDF, DOC, DOCX, TXT)"""
+    document_types = [
+        "application/pdf",
+        "application/msword",
+        "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        "text/plain",
+    ]
+    return mime_type in document_types
 
 
 @app.get("/")
@@ -147,6 +172,15 @@ async def upload_file(file: UploadFile = File(...)):
                 )
             logger.info("Routing to JSON analyzer")
             result = await process_json(file_path, file.filename)
+        
+        elif is_document_type(mime_type):
+            if document_processor is None:
+                raise HTTPException(
+                    status_code=503,
+                    detail="Document processor is not available"
+                )
+            logger.info("Routing to document processor")
+            result = await process_document(file_path, mime_type, file.filename)
         
         else:
             raise HTTPException(
@@ -252,6 +286,55 @@ async def process_json(file_path: Path, filename: str) -> dict:
     }
 
 
+async def process_document(file_path: Path, mime_type: str, filename: str) -> dict:
+    """Process document file (PDF, DOC, DOCX, TXT) through document processor"""
+    # Process document to extract text and metadata
+    processing_result = await document_processor.process(file_path, mime_type)
+    
+    # Get semantic category
+    category = processing_result.get("category", "uncategorized")
+    
+    # Directory manager: create or use existing category directory
+    if directory_manager:
+        storage_path = await directory_manager.store_media(
+            file_path, category, filename
+        )
+    else:
+        # Fallback: use uploads directory
+        storage_path = UPLOAD_DIR / filename
+        import shutil
+        shutil.copy2(file_path, storage_path)
+    
+    # Store metadata and index
+    metadata = {
+        "filename": filename,
+        "mime_type": mime_type,
+        "category": category,
+        "storage_path": str(storage_path),
+        "text": processing_result.get("text", ""),
+        "embeddings": processing_result.get("embeddings"),
+        "metadata": processing_result.get("metadata", {}),
+    }
+    
+    if metadata_indexer:
+        index_id = await metadata_indexer.index_document(metadata)
+    else:
+        index_id = 0
+    
+    logger.info(f"Document processed: {filename} -> {storage_path}, category: {category}")
+    
+    return {
+        "status": "success",
+        "type": "document",
+        "filename": filename,
+        "category": category,
+        "storage_path": str(storage_path),
+        "index_id": index_id,
+        "metadata": metadata,
+        "text_preview": processing_result.get("text", "")[:500] if processing_result.get("text") else "",  # First 500 chars
+    }
+
+
 @app.post("/api/upload/batch")
 async def upload_batch(files: List[UploadFile] = File(...)):
     """Batch upload endpoint"""
@@ -296,6 +379,22 @@ async def search_json(
         raise HTTPException(status_code=503, detail="Metadata indexer is not available")
     results = await metadata_indexer.search_json(
         schema=schema, query=query, limit=limit
+    )
+    return {"results": results}
+
+
+@app.get("/api/search/documents")
+async def search_documents(
+    category: Optional[str] = None,
+    mime_type: Optional[str] = None,
+    query: Optional[str] = None,
+    limit: int = 20
+):
+    """Search documents by category, mime type, or text query"""
+    if metadata_indexer is None:
+        raise HTTPException(status_code=503, detail="Metadata indexer is not available")
+    results = await metadata_indexer.search_documents(
+        category=category, mime_type=mime_type, query=query, limit=limit
     )
     return {"results": results}
 
